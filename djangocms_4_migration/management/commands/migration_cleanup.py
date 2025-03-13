@@ -1,5 +1,7 @@
 import logging
+from packaging.version import Version as PgkVersion
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection
@@ -15,6 +17,22 @@ from djangocms_versioning.models import Version
 
 
 logger = logging.getLogger(__name__)
+
+
+def _fix_link_plugins(page):
+    if "djangocms_link" in settings.INSTALLED_APPS:
+        from djangocms_link import __version__
+        from djangocms_link.models import Link
+
+        if PgkVersion(__version__) >= PgkVersion("5.0.0"):
+            for link in Link.objects.all():
+                if "internal_link" in link.link and link.link["internal_link"].startswith("cms.page:"):
+                    _, linked_page_id = link.link["internal_link"].split(":")
+                    if linked_page_id == str(page.pk):
+                        replacement_page = Page.objects.filter(node_id=page.node_id).exclude(id=page.id).get()
+                        logger.info("Fixing link reference from Page %s to %s", page.id, replacement_page.id)
+                        link.link["internal_link"] = f"cms.page:{replacement_page.pk}"
+                        link.save()
 
 
 def _fix_page_references(page):
