@@ -124,6 +124,7 @@ class Command(BaseCommand):
 
             if not page_content_list.exists():
                 _fix_page_references(page)
+                _fix_link_plugins(page)
                 _delete_page(page)
                 stats['page_deleted'] = stats['page_deleted'] + 1
                 continue
