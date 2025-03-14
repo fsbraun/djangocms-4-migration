@@ -10,6 +10,13 @@
 
 # 0.0.3
 
+* feature: Update foreign key relations to page objects
+* feature: Update soft relation of djangocms-link 5+
+* feature: Update soft relation of djangocms-frontend objects
+* fix: Customer model username retrieval during migration
+
+# 0.0.3
+
 * feature: Add support for custom user models
 
 ## 0.0.2 (2023-07-11)
