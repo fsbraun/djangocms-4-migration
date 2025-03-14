@@ -34,6 +34,36 @@ def _fix_link_plugins(page):
                         link.link["internal_link"] = f"cms.page:{replacement_page.pk}"
                         link.save()
 
+def _fix_frontend_refernces(page):
+
+    def search(json, reference, pk):
+        changed = False
+        for key, value in json.items():
+            if key == "internal_link" and value.startswith(reference + ":"):
+                # Update link field
+                _, linked_page_id = value.split(":")
+                if linked_page_id == str(pk):
+                    replacement_page = Page.objects.filter(node_id=page.node_id).exclude(id=page.id).get()
+                    json[key] = f"{reference}:{replacement_page.pk}"
+                    changed = True
+            elif isinstance(value, dict) and "model" in value and value["model"] == reference and "pk" in value:
+                # Update reference
+                if value["pk"] == pk:
+                    replacement_page = Page.objects.filter(node_id=page.node_id).exclude(id=page.id).get()
+                    value["pk"] = replacement_page.pk
+                    changed = True
+            elif isinstance(value, dict):
+                # search recursively
+                changed = changed or search(value, reference, pk)
+        return changed
+
+    if "djangocms_frontend" in settings.INSTALLED_APPS:
+        from djangocms_frontend.models import FrontendUIItem
+
+        for frontend_component in FrontendUIItem.objects.all():
+            if search(frontend_component.config, "cms.page", page.pk):
+                frontend_component.save()
+
 
 def _fix_page_references(page):
     relations = [
