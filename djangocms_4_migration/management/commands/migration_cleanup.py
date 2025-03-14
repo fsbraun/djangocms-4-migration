@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 def _fix_link_plugins(page):
+    """djangocms-link with version above 5.0.0 stores only "soft" references to pages in JSON fields which will not be
+    updated by `_fix_page_refernces`"""
     if "djangocms_link" in settings.INSTALLED_APPS:
         from djangocms_link import __version__
         from djangocms_link.models import Link
@@ -35,6 +37,8 @@ def _fix_link_plugins(page):
                         link.save()
 
 def _fix_frontend_refernces(page):
+    """djangocms-frontend stores only "soft" references to pages in JSON fields which will not be
+    updated by `_fix_page_refernces`"""
     def search(json, reference, pk):
         changed = False
         for key, value in json.items():
