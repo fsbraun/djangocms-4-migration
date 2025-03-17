@@ -43,19 +43,16 @@ def test_permissions_migration():
 
     user = User.objects.get(username="staff")
 
-    for perm in user.user_permissions.all():
-        print(user, perm.codename, perm.name, perm.content_type)
-
     assert user.has_perm("cms.add_pagecontent")
-    assert user.has_perm("cms.add_pagecontentversion")
+    assert user.has_perm("djangocms_versioning.add_pagecontentversion")
     assert user.has_perm("cms.change_pagecontent")
-    assert user.has_perm("cms.change_pagecontentversion")
+    assert user.has_perm("djangocms_versioning.change_pagecontentversion")
 
     user.groups.clear()  # Remove the user from the group -> lose change permission
 
     user = User.objects.get(username="staff")  # refetch from db
     assert not user.has_perm("cms.change_pagecontent")
-    assert not user.has_perm("cms.change_pagecontentversion")
+    assert not user.has_perm("djangocms_versioning.change_pagecontentversion")
 
 
 if __name__ == "__main__":
