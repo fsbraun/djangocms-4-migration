@@ -13,8 +13,8 @@ def forwards(apps, schema_editor):
     for perm in title_permissions:
         # Create the same permission for the PageContent model
         new_perm, _ = Permission.objects.get_or_create(
-            codename=perm.codename,
-            name=perm.name,
+            codename=perm.codename.replace('_title', '_pagecontent'),
+            name=perm.name.replace(' title', ' pagecontent'),
             content_type=PageContent._meta.get_field('content_type').related_model.objects.get(model='pagecontent')
         )
 
