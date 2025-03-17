@@ -181,6 +181,6 @@ class Command(BaseCommand):
 
             for language in languages:
                 # Delete redundant page urls (the first is the published one - keep it)
-                page.pageurl_set.filter(language=language).order_by("pk")[1:].delete()
+                page.urls.filter(language=language).order_by("pk")[1:].delete()
 
         logger.info("Stats: %s", str(stats))
