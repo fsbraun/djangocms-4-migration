@@ -8,7 +8,7 @@ def forwards(apps, schema_editor):
     Permission = apps.get_model('auth', 'Permission')
 
     # Get all permissions related to the Title model
-    title_permissions = Permission.objects.filter(content_type__app='cms', content_type__model='title')
+    title_permissions = Permission.objects.filter(content_type__app_label='cms', content_type__model='title')
 
     for perm in title_permissions:
         # Create the same permission for the PageContent model
