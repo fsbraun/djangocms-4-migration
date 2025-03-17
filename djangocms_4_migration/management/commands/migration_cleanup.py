@@ -155,19 +155,6 @@ class Command(BaseCommand):
 
             page_content_list = _get_page_contents(page)
 
-            # Find if each PageContents has versions attached.
-            for page_content in page_content_list:
-                # If there are no versions for the pagecontents clean them out as they are not required
-                if not Version.objects.filter(
-                    object_id=page_content.pk,
-                    content_type=page_content_contenttype,
-                ).count():
-                    _delete_page_content_placeholders(page_content_contenttype, page_content)
-                    _delete_page_content(page_content)
-                    stats['pagecontents_deleted'] = stats['pagecontents_deleted'] + 1
-
-            page_content_list = _get_page_contents(page)
-
             if not page_content_list.exists():
                 _fix_page_references(page)
                 _fix_link_plugins(page)
@@ -177,5 +164,23 @@ class Command(BaseCommand):
                 continue
 
             stats['pagecontents_count'] = stats['pagecontents_count'] + page_content_list.count()
+
+            # Find if each PageContents has versions attached.
+            languages = []
+            for page_content in page_content_list:
+                # If there are no versions for the pagecontents clean them out as they are not required
+                if not Version.objects.filter(
+                    object_id=page_content.pk,
+                    content_type=page_content_contenttype,
+                ).count():
+                    _delete_page_content_placeholders(page_content_contenttype, page_content)
+                    _delete_page_content(page_content)
+                    stats['pagecontents_deleted'] = stats['pagecontents_deleted'] + 1
+                else:
+                    languages.append(page_content.language)
+
+            for language in languages:
+                # Delete redundant page urls (the first is the published one - keep it)
+                page.pageurl_set.filter(language=language).order_by("pk")[1:].delete()
 
         logger.info("Stats: %s", str(stats))
