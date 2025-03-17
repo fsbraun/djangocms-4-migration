@@ -2,7 +2,7 @@ from django.db import migrations
 
 
 def forwards(apps, schema_editor):
-    PageContent = apps.get_model('cms', 'PageContent')
+    ContentType = apps.get_model('contenttypes', 'ContentType')
     User = apps.get_model('auth', 'User')
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')
@@ -18,7 +18,7 @@ def forwards(apps, schema_editor):
         version_perm, _ = Permission.objects.get_or_create(
             codename=perm.codename.replace('_title', '_pagecontentversion'),
             name=perm.name.replace(' title', ' pagecontentversion'),
-            content_type=PageContent._meta.get_field('content_type').related_model.objects.get(model='pagecontentversion')
+            content_type=ContentType.objects.get(app_label="djangocms_versioning", model='pagecontentversion'),
         )
 
         # Assign the new permission to users and groups
