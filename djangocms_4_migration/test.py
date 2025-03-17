@@ -23,6 +23,8 @@ def setup_v3_testproj():
 
 
 def test_title_migration():
+    """Minimal test if the title objects have been split and turned into page content
+    objects with versions."""
     from cms.models import PageContent
 
     page_contents = PageContent.admin_manager.order_by("language").all()
@@ -34,11 +36,14 @@ def test_title_migration():
 
 
 def test_permissions_migration():
+    """Check if the tiltle permissions have been migrated to page content permissions."""
     from django.contrib.auth import get_user_model
 
     User = get_user_model()
 
     user = User.objects.get(username="staff")
+
+    print(user.user_permissions.all())
     assert user.has_perm("cms.add_pagecontent")
     assert user.has_perm("cms.change_pagecontent")
 
