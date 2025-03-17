@@ -12,16 +12,18 @@ def forwards(apps, schema_editor):
 
     for perm in title_permissions:
         # Create the same permission for the PageContent model
-        perm.pk = None
-        perm.content_type = PageContent._meta.get_field('content_type').related_model.objects.get(model='pagecontent')
-        perm.save()
+        new_perm, _ = Permission.objects.get_or_create(
+            codename=perm.codename,
+            name=perm.name,
+            content_type=PageContent._meta.get_field('content_type').related_model.objects.get(model='pagecontent')
+        )
 
         # Assign the new permission to users and groups
         for user in User.objects.filter(user_permissions=perm):
-            user.user_permissions.add(perm)
+            user.user_permissions.add(new_perm)
 
         for group in Group.objects.filter(permissions=perm):
-            group.permissions.add(perm)
+            group.permissions.add(new_perm)
 
 
 class Migration(migrations.Migration):
