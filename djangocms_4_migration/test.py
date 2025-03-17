@@ -21,6 +21,10 @@ def setup_v3_testproj():
     api.add_plugin(placeholder, "TextPlugin", "fr", body="Bonjour le monde")
     page.publish("en")
 
+    draft_title = page.publisher_public.get_title_obj("en")
+    draft_title.path = "2nd-home"
+    draft_title.save()
+
 
 def test_title_migration():
     """Minimal test if the title objects have been split and turned into page content
@@ -28,11 +32,11 @@ def test_title_migration():
     from cms.models import PageContent
 
     page_contents = PageContent.admin_manager.order_by("language").all()
-    assert page_contents.count() == 2
-    assert page_contents[0].language == "en"
-    assert page_contents[1].language == "fr"
-    assert page_contents[0].versions.first().state == "published"
-    assert page_contents[1].versions.first().state == "draft"
+    assert page_contents.count() == 2, f"Expected 2 page contents, got {page_contents.count()}"
+    assert page_contents[0].language == "en", f"Expected language 'en', got {page_contents[0].language}"
+    assert page_contents[1].language == "fr", f"Expected language 'fr', got {page_contents[1].language}"
+    assert page_contents[0].versions.first().state == "published", f"Expected state 'published', got {page_contents[0].versions.first().state}"
+    assert page_contents[1].versions.first().state == "draft", f"Expected state 'draft', got {page_contents[1].versions.first().state}"
 
 
 def test_pageurl_migration():
@@ -40,9 +44,11 @@ def test_pageurl_migration():
     from cms.models import PageUrl
 
     page_urls = PageUrl.objects.all()
-    assert page_urls.count() == 2
-    assert page_urls[0].language_code == "en"
-    assert page_urls[1].language_code == "fr"
+    for url in page_urls:
+        print(url.pk, url.page, url.language, url.path)
+    assert page_urls.count() == 2, f"Expected 2 page urls, got {page_urls.count()}"
+    assert page_urls[0].language_code == "en", f"Expected language 'en', got {page_urls[0].language_code}"
+    assert page_urls[1].language_code == "fr", f"Expected language 'fr', got {page_urls[1].language_code}"
 
 
 def test_permissions_migration():

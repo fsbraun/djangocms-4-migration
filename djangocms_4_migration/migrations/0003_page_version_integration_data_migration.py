@@ -21,6 +21,7 @@ USERNAME_FIELD = getattr(get_user_model(), "USERNAME_FIELD", "username")
 def forwards(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     PageContent = apps.get_model("cms", "PageContent")
+    PageUrl = apps.get_model("cms", "PageUrl")
     Version = apps.get_model("djangocms_versioning", "Version")
     PageData = apps.get_model("djangocms_4_migration", "PageData")
     User = apps.get_model(*settings.AUTH_USER_MODEL.split('.'))
@@ -86,6 +87,19 @@ def forwards(apps, schema_editor):
             content_type=page_content_contenttype,
         )
 
+    def _handle_page_url(existing_title):
+        return
+        if  existing_title.publisher_is_draft:
+            page_id = existing_title.publisher_public_id
+        else:
+            page_id = existing_title.page_id
+
+        page_urls = PageUrl.objects.filter(page_id=page_id, language=existing_title.language)
+        if len(page_urls) > 1:
+            # More than one page url? Delete all that differ
+            page_urls.exclude(path=existing_title.path).delete()
+            PageUrl.objects.filter(page_id=existing_title.page_id, language=existing_title.language)[1:].delete()
+
     # CAVEAT: Draft is always seen before published as that is how CMS 3.5 created them.
     for existing_title in PageData.objects.using(db_alias).all():
         """
@@ -101,10 +115,11 @@ def forwards(apps, schema_editor):
         # If this is the draft page
         if existing_title.publisher_is_draft:
             _handle_draft_page(existing_title)
-
         # Otherwise this is the published page
         else:
             _handle_public_page(existing_title)
+
+        _handle_page_url(existing_title)
 
 
 class Migration(migrations.Migration):

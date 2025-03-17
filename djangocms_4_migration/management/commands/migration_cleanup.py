@@ -155,16 +155,6 @@ class Command(BaseCommand):
 
             page_content_list = _get_page_contents(page)
 
-            if not page_content_list.exists():
-                _fix_page_references(page)
-                _fix_link_plugins(page)
-                _fix_frontend_refernces(page)
-                _delete_page(page)
-                stats['page_deleted'] = stats['page_deleted'] + 1
-                continue
-
-            stats['pagecontents_count'] = stats['pagecontents_count'] + page_content_list.count()
-
             # Find if each PageContents has versions attached.
             for page_content in page_content_list:
                 # If there are no versions for the pagecontents clean them out as they are not required
@@ -175,5 +165,17 @@ class Command(BaseCommand):
                     _delete_page_content_placeholders(page_content_contenttype, page_content)
                     _delete_page_content(page_content)
                     stats['pagecontents_deleted'] = stats['pagecontents_deleted'] + 1
+
+            page_content_list = _get_page_contents(page)
+
+            if not page_content_list.exists():
+                _fix_page_references(page)
+                _fix_link_plugins(page)
+                _fix_frontend_refernces(page)
+                _delete_page(page)
+                stats['page_deleted'] = stats['page_deleted'] + 1
+                continue
+
+            stats['pagecontents_count'] = stats['pagecontents_count'] + page_content_list.count()
 
         logger.info("Stats: %s", str(stats))
