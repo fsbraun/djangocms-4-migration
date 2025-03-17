@@ -35,6 +35,16 @@ def test_title_migration():
     assert page_contents[1].versions.first().state == "draft"
 
 
+def test_pageurl_migration():
+    """Check if the page urls have been migrated."""
+    from cms.models import PageUrl
+
+    page_urls = PageUrl.objects.all()
+    assert page_urls.count() == 2
+    assert page_urls[0].language_code == "en"
+    assert page_urls[1].language_code == "fr"
+
+
 def test_permissions_migration():
     """Check if the tiltle permissions have been migrated to page content permissions."""
     from django.contrib.auth import get_user_model
