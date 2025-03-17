@@ -10,6 +10,7 @@ def forwards(apps, schema_editor):
     # Get all permissions related to the Title model
     title_permissions = Permission.objects.filter(content_type__app_label='cms', content_type__model='pagecontent')
 
+    pageversion, _ = ContentType.objects.get_or_create(app_label="djangocms_versioning", model='pagecontentversion')
     for perm in title_permissions:
         perm.codename.replace('_title', '_pagecontent')
         perm.name.replace(' title', ' pagecontent')
@@ -18,7 +19,7 @@ def forwards(apps, schema_editor):
         version_perm, _ = Permission.objects.get_or_create(
             codename=perm.codename.replace('_title', '_pagecontentversion'),
             name=perm.name.replace(' title', ' pagecontentversion'),
-            content_type=ContentType.objects.get(app_label="djangocms_versioning", model='pagecontentversion'),
+            content_type=pageversion,
         )
 
         # Assign the new permission to users and groups
