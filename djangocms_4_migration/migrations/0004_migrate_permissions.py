@@ -2,8 +2,7 @@ from django.db import migrations
 
 
 def forwards(apps, schema_editor):
-    Title = apps.get_model('djangocms_4_migration', 'Title')
-    PageContent = apps.get_model('djangocms_4_migration', 'PageContent')
+    PageContent = apps.get_model('cms', 'PageContent')
     User = apps.get_model('auth', 'User')
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')
