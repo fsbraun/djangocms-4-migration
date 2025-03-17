@@ -32,6 +32,8 @@ def forwards(apps, schema_editor):
             group.permissions.add(new_perm)
             group.permissions.add(version_perm)
 
+        perm.detele()
+
 
 class Migration(migrations.Migration):
 
