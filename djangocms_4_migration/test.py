@@ -45,8 +45,8 @@ def test_pageurl_migration():
 
     page_urls = PageUrl.objects.order_by("language").all()
     assert page_urls.count() == 2, f"Expected 2 page urls, got {page_urls.count()}"
-    assert page_urls[0].language_code == "en", f"Expected language 'en', got {page_urls[0].language}"
-    assert page_urls[1].language_code == "fr", f"Expected language 'fr', got {page_urls[1].language}"
+    assert page_urls[0].language == "en", f"Expected language 'en', got {page_urls[0].language}"
+    assert page_urls[1].language == "fr", f"Expected language 'fr', got {page_urls[1].language}"
 
 
 def test_permissions_migration():
