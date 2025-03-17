@@ -12,8 +12,8 @@ def forwards(apps, schema_editor):
 
     pageversion, _ = ContentType.objects.get_or_create(app_label="djangocms_versioning", model='pagecontentversion')
     for perm in title_permissions:
-        perm.codename.replace('_title', '_pagecontent')
-        perm.name.replace(' title', ' pagecontent')
+        perm.codename = perm.codename.replace('_title', '_pagecontent')
+        perm.name = perm.name.replace(' title', ' pagecontent')
         perm.save()
         # Create the same permission for the PageContent model
         version_perm, _ = Permission.objects.get_or_create(
