@@ -30,10 +30,6 @@ class Migration(migrations.Migration):
         ('djangocms_4_migration', '0003_page_version_integration_data_migration'),
     ]
 
-    run_before = [
-        ('cms', '0023_placeholder_source_field'),  # Be sure to run before CMS 4.0 migrations. After all 3.5 have run.
-    ]
-
     operations = [
         migrations.RunPython(forwards),
     ]
