@@ -43,7 +43,9 @@ def test_permissions_migration():
 
     user = User.objects.get(username="staff")
 
-    print(user.user_permissions.all())
+    for perm in user.user_permissions.all():
+        print(user, perm.codename, perm.name, perm.content_type)
+
     assert user.has_perm("cms.add_pagecontent")
     assert user.has_perm("cms.change_pagecontent")
 
